@@ -1,8 +1,8 @@
 import numpy as np
 
-
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
+
 
 # Define the derivative of the sigmoid function
 def sigmoid_derivative(x):
