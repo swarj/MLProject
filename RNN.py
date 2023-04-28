@@ -19,32 +19,27 @@ class RNN:
         self.weights_input = np.random.randn(input_size, hidden_size)
         self.weights_hidden = np.random.randn(hidden_size, hidden_size)
         self.weights_output = np.random.randn(hidden_size, output_size)
-
+        self.outputs = []  # Initialize outputs list
     
-     # Forward pass
-    def forward(self, inputs):
-    # Initialize the hidden state with zeros
-    self.hidden_state = np.zeros((1, self.hidden_size))
-    
-    # Loop through each time step
-    for i in range(inputs.shape[0]):
-        # Compute the net input to the hidden layer
-        net_hidden = np.dot(inputs[i], self.weights_input) + np.dot(self.hidden_state, self.weights_hidden)
-        
-        # Compute the output of the hidden layer using the sigmoid activation function
-        self.hidden_state = sigmoid(net_hidden)
-        
-        # Compute the net input to the output layer
-        net_output = np.dot(self.hidden_state, self.weights_output)
-        
-        # Compute the output of the output layer using the linear activation function
-        output = net_output
-        
-        # Append the output to the outputs list
-        self.outputs.append(output)
-        
-    # Return the outputs list
-    return self.outputs
+        # Forward pass
+    def forward_pass(self, inputs):
+        # Initialize the hidden state with zeros
+        self.hidden_state = np.zeros((1, self.hidden_size))        
+        # Convert inputs to float
+        inputs = np.array(inputs).astype(float)        
+        # Loop 
+        for i in range(inputs.shape[0]):
+            # compute the dot product of input
+            input_hidden = np.dot(np.atleast_2d(inputs[i]), self.weights_input) + np.dot(self.hidden_state, self.weights_hidden)             
+            # compute thr dot product of hidden state using sigmoid
+            self.hidden_state = sigmoid(input_hidden)                
+            # Compute the net input to the output layer
+            hidden_output = np.dot(self.hidden_state, self.weights_output)                          
+            # Append the output to the outputs list
+            self.outputs.append(hidden_output)
+            outputs = self.outputs
+        # Return the outputs list
+        return outputs
 
 
     def backward(self, inputs, outputs, targets, learning_rate):
@@ -75,7 +70,7 @@ class RNN:
 
     def train(self, x, yi, epochs=100, learning_rate=0.01):
         for epoch in range(epochs):
-            y_pred = self.forward(x)
+            y_pred = self.forward_pass(x)
             loss = 0
             #loss = np.sum((y - y_pred)**2)
             self.backward(x, y_pred, yi, learning_rate)
